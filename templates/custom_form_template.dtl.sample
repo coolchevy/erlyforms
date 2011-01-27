@@ -1,0 +1,15 @@
+CUSTOM
+{%block content%}
+<form action="{{ form_action }}" id="{{form_name}}" class="style_for_{{form_name}}" method="post">
+  <fieldset>
+    <legend>{{ form_title }}</legend>
+	<ul>
+    {% for field in fields %}
+    <li>
+    {{ field }}
+    </li>
+    {% endfor %}
+	</ul>
+  </fieldset>
+</form>
+{%endblock%}

@@ -1,0 +1,24 @@
+%%-*- mode: erlang -*-
+%% vi:ft=erlang
+
+{application, forms,
+ [
+  {description, "forms"},
+  {vsn, "1"},
+  {modules, [
+             form,
+             form_validator,
+             email_address,
+             domain,
+             custom_form_template_dtl,
+             input_field_template_dtl,
+             custom_field_template_dtl
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { erlybet_app, []}},
+  {env, []}
+ ]}.
