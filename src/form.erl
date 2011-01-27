@@ -43,7 +43,7 @@
     choices = []::list(),
     template::atom(),
     initial::string(),
-    required::bool()
+    required::boolean()
     }).
 
 %%====================================================================
