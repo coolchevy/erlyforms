@@ -20,7 +20,7 @@
          password/3,
          submit/1,
          submit/2,
-         hidden/2,
+         hidden/3,
          select/3,
          select/4,
          custom/3,
@@ -111,8 +111,8 @@ submit(Title) ->
 submit(Title, Name) ->
     #field{type=submit, initial=Title, id=field_id(Name), name=Name,  template=input_field_template_dtl}.
 
-hidden(Name, Rules) ->
-    #field{type=hidden, name=Name,id=field_id(Name), rules=Rules,  template=input_field_template_dtl}.
+hidden(Name, Initial, Rules) ->
+        #field{type=hidden, name=Name,id=field_id(Name), rules=Rules, initial=Initial, template=input_field_template_dtl}.
 
 select(Title, Choices, Rules) ->
     select(Title, field_name('select',Title), Choices, Rules).
