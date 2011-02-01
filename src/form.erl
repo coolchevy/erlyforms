@@ -238,7 +238,10 @@ render_field(#field{type=Type, name=Name, initial=Initial, title=Title, id=Id, c
     render_field_template(proplists:get_value(Name, ValidFields),Name,Title,Type,Id,Initial,Choices,Template,Required).
 
 render_field_template(undefined, Name, Title, Type, Id, Initial, Choices, Template, Required)->
-    render_field_template(Initial, Name, Title, Type, Id, Choices, Template, Required).
+    render_field_template(Initial, Name, Title, Type, Id, Choices, Template, Required);
+render_field_template(Value, Name, Title, Type, Id, _Initial, Choices, Template, Required)->
+        render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required).
+
 
 render_field_template(undefined, Name, Title, Type, Id, Choices, Template, Required)->
  apply(Template,render, [
