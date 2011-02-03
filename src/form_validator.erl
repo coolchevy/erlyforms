@@ -133,7 +133,13 @@ validate_predicate_simple({length, [Exact]}, L) ->
 validate_predicate_simple({length, [Min,Max]}, L) when is_list(L) -> 
     case length(L) of
         Len when Min =< Len, Len =< Max -> true;
-        _ -> {error,list_to_binary(io_lib:format("This field must contain from ~p to ~p characters",[Min,Max]))} 
+        _ -> 
+            case Max of
+                infinity ->
+                    {error,list_to_binary(io_lib:format("This field must contain minimum ~p characters",[Min]))};
+                    _ ->
+                    {error,list_to_binary(io_lib:format("This field must contain from ~p to ~p characters",[Min,Max]))} 
+            end
     end;
 validate_predicate_simple({length, [_Min,_Max]}, _L) -> false;
 validate_predicate_simple({predicate, P}, L) -> P(L);
