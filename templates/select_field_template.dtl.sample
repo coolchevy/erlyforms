@@ -2,6 +2,6 @@
     <select name="{{ name }}" id="{{ id }}" {%if required%}class="required"{%endif%}>
         <option>---</option>
         {%for k,v in choices%}
-        <option {% if size %}size="{{ size }}"{% else %}size="20"{% endif %} value="{{k}}" {% ifequal value v %}selected="selected"{% endifequal %}>{{v}}</option>
+        <option {% if size %}size="{{ size }}"{% else %}size="20"{% endif %} value="{{k}}" {% ifequal value k %}selected="selected"{% endifequal %}>{{v}}</option>
         {%endfor%}
      </select>

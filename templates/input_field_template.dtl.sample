@@ -1,5 +1,9 @@
-{%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
-	<input type="{{ type }}" name="{{ name }}" id="{{ id }}" {%if required%}class="required"{%endif%}
-         {% if size %}size="{{ size }}"{% else %}size="20"{% endif %}
-         {% if value %}value="{{ value }}"{% endif %}
-         />
+{%ifequal type "hidden"%}
+    <input type="{{ type }}" name="{{ name }}" id="{{ id }}" value="{{ value }}"/>
+{%else%}
+    {%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
+        <input type="{{ type }}" name="{{ name }}" id="{{ id }}" {%if required%}class="required"{%endif%}
+             {% if size %}size="{{ size }}"{% else %}size="20"{% endif %}
+             value="{{ value }}"
+             />
+{%endif%}
