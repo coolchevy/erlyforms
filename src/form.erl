@@ -16,6 +16,8 @@
          render_with_fields/2,
          text/2,
          text/3,
+         date/2,
+         date/3,
          password/2,
          password/3,
          submit/1,
@@ -41,6 +43,7 @@
     value::string(),
     rules = []::list(),
     choices = []::list(),
+    attrs = []::list(),
     template::atom(),
     initial::string(),
     required::boolean()
@@ -98,6 +101,12 @@ text(Title, Rules) ->
 text(Title, Name, Rules) ->
     #field{type=text, title=Title, name=Name, id=field_id(Name), rules=Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
+date(Title, Rules) ->
+    text(Title, field_name("date", Title), Rules).
+
+date(Title, Name, Rules) ->
+    Attrs = [{class,"hasDatepicker"}],
+    #field{type=text, title=Title, name=Name, id=field_id(Name), attrs=Attrs, rules=['date'] ++ Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
 password(Title, Rules) ->
     password(Title, field_name("pw", Title), Rules).
@@ -234,25 +243,27 @@ render_form(#form{title=Title,
 %%--------------------------------------------------------------------
 
 -spec(render_field(Field :: record(), ValidFields :: list()) -> {ok, list()}).
-render_field(#field{type=Type, name=Name, initial=Initial, title=Title, id=Id, choices=Choices, template=Template, required=Required}, ValidFields) ->
-    render_field_template(proplists:get_value(Name, ValidFields),Name,Title,Type,Id,Initial,Choices,Template,Required).
+render_field(#field{type=Type, name=Name, initial=Initial, title=Title, id=Id, choices=Choices, template=Template, required=Required, attrs=Attrs}, ValidFields) ->
+    render_field_template(proplists:get_value(Name, ValidFields),Name,Title,Type,Id,Initial,Choices,Template,Required,Attrs).
 
-render_field_template(undefined, Name, Title, Type, Id, Initial, Choices, Template, Required)->
-    render_field_template(Initial, Name, Title, Type, Id, Choices, Template, Required);
-render_field_template(Value, Name, Title, Type, Id, _Initial, Choices, Template, Required)->
-        render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required).
+render_field_template(undefined, Name, Title, Type, Id, Initial, Choices, Template, Required, Attrs)->
+    render_field_template(Initial, Name, Title, Type, Id, Choices, Template, Required, Attrs);
+render_field_template(Value, Name, Title, Type, Id, _Initial, Choices, Template, Required, Attrs)->
+        render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required, Attrs).
 
 
-render_field_template(undefined, Name, Title, Type, Id, Choices, Template, Required)->
+render_field_template(undefined, Name, Title, Type, Id, Choices, Template, Required, Attrs)->
  apply(Template,render, [
                              [{name, Name},
                               {title, Title},
                               {type, atom_to_list(Type)},
                               {choices, Choices},
                               {required, Required},
+                              {value, []},
+                              {attrs, attrs_to_string(Attrs)},
                               {id, Id}]
                       ]);
-render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required)->
+render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required, Attrs)->
   apply(Template,render, [
                               [{name, Name},
                                {title, Title},
@@ -260,9 +271,12 @@ render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required)
                                {choices, Choices},
                                {id, Id},
                                {required, Required},
+                               {attrs, attrs_to_string(Attrs)},
                                {value, Value}]
                        ]).
 
+attrs_to_string(Attrs) ->
+    string:join([io_lib:format("~ts=\"~ts\"", [Name,Value]) || {Name, Value} <- Attrs], " ").
 
 %%--------------------------------------------------------------------
 %% @doc generate field name

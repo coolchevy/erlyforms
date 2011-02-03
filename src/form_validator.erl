@@ -123,6 +123,7 @@ validate_predicate({duplication, [Field|Duplicates]}, _Name, Data)
 validate_predicate(Predicate, Name, Data) ->
     validate_predicate_simple(Predicate, proplists:get_value(Name, Data)).
 
+
 %% @private
 validate_predicate_simple(not_empty, L) when is_list(L), length(L) > 0 -> true;
 validate_predicate_simple(not_empty, _) -> {error,<<"This field is required">>};
@@ -140,6 +141,9 @@ validate_predicate_simple({predicate, P}, L) -> P(L);
 validate_predicate_simple({not_predicate, P}, L) -> P(L) =:= false;
 validate_predicate_simple(email_address, L) when is_list(L) ->
     email_address:validate(L);
+validate_predicate_simple(date, L) when is_list(L) ->
+    %email_address:validate(L);
+    true;
 validate_predicate_simple(email_address, undefined) -> false;
 validate_predicate_simple({regex, RE}, L) when is_list(L) ->
     case re:run(L, RE) of
