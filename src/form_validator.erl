@@ -67,7 +67,6 @@ valid_fields(Results, Data) ->
 validate_rule({Name, Predicates}, Data) when is_list(Name), is_list(Predicates) ->
     {Name,
      lists:flatmap(fun (Predicate) ->
-                            error_logger:info_msg("~p",[Predicate]),
                            case validate_predicate(Predicate, Name, Data) of
                                true -> [];
                                false -> [{error, Predicate, false}];
