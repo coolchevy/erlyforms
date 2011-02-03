@@ -3,6 +3,6 @@
 {%else%}
     <li {%if required%}class="required"{%endif%}>
         {%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
-        <input type="{{ type }}" name="{{ name }}" id="{{ id }}" value="{{ value }}" />
+        <input type="{{ type }}" name="{{ name }}" id="{{ id }}" value="{{ value }}"  {{attrs}} />
     </li>
 {%endif%}

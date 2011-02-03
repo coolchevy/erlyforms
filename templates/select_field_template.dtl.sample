@@ -1,6 +1,6 @@
 <li {%if required%}class="required"{%endif%}>
     {%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
-    <select name="{{ name }}" id="{{ id }}">
+    <select name="{{ name }}" id="{{ id }}"  {{attrs}}>
         <option>---</option>
         {%for k,v in choices%}
         <option {% if size %}size="{{ size }}"{% else %}size="20"{% endif %} value="{{k}}" {% ifequal value k %}selected="selected"{% endifequal %}>{{v}}</option>
