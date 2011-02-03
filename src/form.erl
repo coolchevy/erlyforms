@@ -105,7 +105,7 @@ date(Title, Rules) ->
     text(Title, field_name("date", Title), Rules).
 
 date(Title, Name, Rules) ->
-    Attrs = [{class,"hasDatepicker"}],
+    Attrs = [{class,"calendar"}],
     #field{type=text, title=Title, name=Name, id=field_id(Name), attrs=Attrs, rules=['date'] ++ Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
 password(Title, Rules) ->
