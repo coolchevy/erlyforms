@@ -1,7 +1,9 @@
-{%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
-    <select name="{{ name }}" id="{{ id }}" {%if required%}class="required"{%endif%}>
+<li {%if required%}class="required"{%endif%}>
+    {%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
+    <select name="{{ name }}" id="{{ id }}">
         <option>---</option>
         {%for k,v in choices%}
         <option {% if size %}size="{{ size }}"{% else %}size="20"{% endif %} value="{{k}}" {% ifequal value k %}selected="selected"{% endifequal %}>{{v}}</option>
         {%endfor%}
      </select>
+ </li>

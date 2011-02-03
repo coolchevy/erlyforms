@@ -1,1 +1,3 @@
-<input type="button" name="{{ name }}" id="{{ id }}" {%if required%}class="required"{%endif%}/>
+<li {%if required%}class="required"{%endif%}>
+    <input type="button" name="{{ name }}" id="{{ id }}"/>
+</li>

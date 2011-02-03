@@ -4,10 +4,8 @@
     <legend>{{ form_title }}</legend>
 	<ul>
     {% for field in fields %}
-    <li>
     {{ field }}
 	<span class="msg"></span>
-    </li>
     {% endfor %}
 	</ul>
   </fieldset>

@@ -5,9 +5,7 @@ CUSTOM
     <legend>{{ form_title }}</legend>
 	<ul>
     {% for field in fields %}
-    <li>
-    {{ field }}
-    </li>
+        {{ field }}
     {% endfor %}
 	</ul>
   </fieldset>
