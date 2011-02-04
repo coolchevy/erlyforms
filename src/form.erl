@@ -203,11 +203,13 @@ valid_fields(F, Result, Data) ->
                    proplists:get_value(Rule, Result) =:= []],
     lists:flatten([Simple, Complex]).
 
+
+
 valid_post(F = #form{}, Data) ->
     %% Fix Array in Post
-    UniqData = [{K,proplists:get_all_values(K, Data)} || {K,_} <- Data],
+    UniqData = post_array(Data),
     Result = form:validate(F, UniqData),
-    Fields = valid_fields(F, Result, Data),
+    Fields = valid_fields(F, Result, UniqData),
     case form_validator:is_valid(Result) of
         true ->
             {valid, Fields};
@@ -385,3 +387,10 @@ simple_copy_test() ->
                               {"valid", []}],
                              [{"invalid", invalid},
                               {"valid", foo}])).
+
+post_array(Data) ->
+  [{K,post_array_uniq(proplists:get_all_values(K, Data))} || {K,_} <- Data].
+post_array_uniq(Data) when is_list(Data), length(Data) > 1 ->
+  Data;
+post_array_uniq(Data) ->
+  lists:last(Data).
