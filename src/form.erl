@@ -18,6 +18,8 @@
          text/3,
          date/2,
          date/3,
+         datetime/2,
+         datetime/3,
          password/2,
          password/3,
          submit/1,
