@@ -25,6 +25,8 @@
          hidden/3,
          select/3,
          select/4,
+         multiple_select/3,
+         multiple_select/4,
          custom/3,
          custom/4,
          validate/2,
@@ -123,6 +125,20 @@ submit(Title, Name) ->
 hidden(Name, Initial, Rules) ->
         #field{type=hidden, name=Name,id=field_id(Name), rules=Rules, initial=Initial, template=input_field_template_dtl}.
 
+multiple_select(Title, Choices, Rules) ->
+    multiple_select(Title, field_name('multiple_select',Title), Choices, Rules).
+
+multiple_select(Title, Name, Choices, Rules) ->
+    Required = field_required(Rules),
+    case Required of
+        true ->
+                DefaultRules = [{members,[X || {X,_} <- Choices]}],
+                AllRules = lists:append(DefaultRules,Rules);
+        false ->
+                AllRules = Rules
+    end,
+    #field{name=Name, title=Title, choices=Choices, id=field_id(Name), rules=AllRules, attrs=[{"multiple","multiple"}],  template=multiple_select_field_template_dtl, required=Required}.
+
 select(Title, Choices, Rules) ->
     select(Title, field_name('select',Title), Choices, Rules).
 
@@ -187,9 +203,13 @@ valid_fields(F, Result, Data) ->
                    proplists:get_value(Rule, Result) =:= []],
     lists:flatten([Simple, Complex]).
 
+
+
 valid_post(F = #form{}, Data) ->
-    Result = form:validate(F, Data),
-    Fields = valid_fields(F, Result, Data),
+    %% Fix Array in Post
+    UniqData = post_array(Data),
+    Result = form:validate(F, UniqData),
+    Fields = valid_fields(F, Result, UniqData),
     case form_validator:is_valid(Result) of
         true ->
             {valid, Fields};
@@ -367,3 +387,10 @@ simple_copy_test() ->
                               {"valid", []}],
                              [{"invalid", invalid},
                               {"valid", foo}])).
+
+post_array(Data) ->
+  [{K,post_array_uniq(proplists:get_all_values(K, Data))} || {K,_} <- Data].
+post_array_uniq(Data) when is_list(Data), length(Data) > 1 ->
+  Data;
+post_array_uniq(Data) ->
+  lists:last(Data).

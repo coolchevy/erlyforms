@@ -160,9 +160,19 @@ validate_predicate_simple({regex, _RE}, _L) ->
     {error, not_a_string};
 validate_predicate_simple({member, List}, L) ->
     case lists:member(L, List) of
-        true -> true;
+        true -> 
+            true;
         false -> {error,<<"Selected variant not in list">>}
     end;
+validate_predicate_simple({members, List}, L) when is_list(L) ->
+    case ordsets:intersection(ordsets:from_list(List), ordsets:from_list(L)) of
+        [] ->
+            {error,<<"Selected variant not in list">>};
+        _ ->
+            true
+    end;
+%%sql
+validate_predicate_simple(_, null) -> true;
 validate_predicate_simple(P, V) -> erlang:error({not_implemented, {P, V}}).
 
 %% @private
