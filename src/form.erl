@@ -132,11 +132,7 @@ multiple_select(Title, Name, Choices, Rules) ->
     Required = field_required(Rules),
     case Required of
         true ->
-<<<<<<< HEAD
                 DefaultRules = [{members,[X || {X,_} <- Choices]}],
-=======
-                DefaultRules = [{member,[X || {X,_} <- Choices]}],
->>>>>>> eca5c4048a7adfb31092ee75f5d675cfde16865a
                 AllRules = lists:append(DefaultRules,Rules);
         false ->
                 AllRules = Rules
