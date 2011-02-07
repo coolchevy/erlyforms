@@ -106,7 +106,7 @@ text(Title, Name, Rules) ->
     #field{type=text, title=Title, name=Name, id=field_id(Name), rules=Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
 datetime(Title, Rules) ->
-    datetim(Title, field_name("datetime", Title), Rules).
+    datetime(Title, field_name("datetime", Title), Rules).
 
 datetime(Title, Name, Rules) ->
     Attrs = [{class,"datetimecalendar"}],
