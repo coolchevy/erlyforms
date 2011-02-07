@@ -103,11 +103,18 @@ text(Title, Rules) ->
 text(Title, Name, Rules) ->
     #field{type=text, title=Title, name=Name, id=field_id(Name), rules=Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
+datetime(Title, Rules) ->
+    text(Title, field_name("datetime", Title), Rules).
+
+datetime(Title, Name, Rules) ->
+    Attrs = [{class,"datetimecalendar"}],
+    #field{type=text, title=Title, name=Name, id=field_id(Name), attrs=Attrs, rules=['datetime'] ++ Rules, template=input_field_template_dtl, required=field_required(Rules)}.
+
 date(Title, Rules) ->
     text(Title, field_name("date", Title), Rules).
 
 date(Title, Name, Rules) ->
-    Attrs = [{class,"calendar"}],
+    Attrs = [{class,"datecalendar"}],
     #field{type=text, title=Title, name=Name, id=field_id(Name), attrs=Attrs, rules=['date'] ++ Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
 password(Title, Rules) ->
