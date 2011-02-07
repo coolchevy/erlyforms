@@ -146,8 +146,9 @@ validate_predicate_simple({predicate, P}, L) -> P(L);
 validate_predicate_simple({not_predicate, P}, L) -> P(L) =:= false;
 validate_predicate_simple(email_address, L) when is_list(L) ->
     email_address:validate(L);
+validate_predicate_simple(datetime, L) when is_list(L) ->
+    true;
 validate_predicate_simple(date, L) when is_list(L) ->
-    %email_address:validate(L);
     true;
 validate_predicate_simple(email_address, undefined) -> false;
 validate_predicate_simple({regex, RE}, L) when is_list(L) ->
