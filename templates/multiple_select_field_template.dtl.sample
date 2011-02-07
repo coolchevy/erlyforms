@@ -1,0 +1,9 @@
+<li{%if required%} class="req"{%endif%}>
+{%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
+    <select name="{{ name }}" id="{{ id }}" {%if required%}class="required"{%endif%} {{attrs}}>
+        <option>---</option>
+        {%for k,v in choices%}
+                <option value="{{k}}" {% if k in value %}selected="selected"{% endif %}>{{v}}</option>
+        {%endfor%}
+     </select>
+</li>

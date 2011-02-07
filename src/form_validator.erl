@@ -158,6 +158,13 @@ validate_predicate_simple({regex, RE}, L) when is_list(L) ->
     end;
 validate_predicate_simple({regex, _RE}, _L) ->
     {error, not_a_string};
+validate_predicate_simple({member, List}, L) when is_list(List) ->
+    case ordsets:intersection(ordsets:from_list(List), ordsets:from_list(L)) of
+        [] ->
+            {error,<<"Selected variant not in list">>};
+        _ ->
+            true
+    end;
 validate_predicate_simple({member, List}, L) ->
     case lists:member(L, List) of
         true -> 
