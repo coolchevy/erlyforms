@@ -25,15 +25,15 @@
 -define(SECOND, "(?<second>[0-9]{2})").
 -define(TIME_DELIMITER,"[:]").
 
--define(DATE_FORMAT, ?YEAR++?DATE_DELIMITER++?MONTH++?DATE_DELIMITER++?DAY).
--define(TIME_FORMAT, ?HOUR++?TIME_DELIMITER++?MINUTE++?TIME_DELIMITER++?SECOND).
+-define(DATE_FORMAT, "^"++?YEAR++?DATE_DELIMITER++?MONTH++?DATE_DELIMITER++?DAY++"$").
+-define(TIME_FORMAT, "^"++?HOUR++?TIME_DELIMITER++?MINUTE++?TIME_DELIMITER++?SECOND++"$").
 
 %%====================================================================
 %% API
 %%====================================================================
 
 validate_date(Date) ->
-    case re:run(Date, ?DATE_FORMAT, [{capture,[year,month,day]}]) of
+    case re:run(string:strip(Date), ?DATE_FORMAT, [{capture,[year,month,day]}]) of
         nomatch ->
             {error, <<"Invalid date format. Example: YYYY-MM-DD">>};
         {match,[{YearS,YearL},{MonthS,MonthL},{DayS,DayL}]} ->
@@ -42,7 +42,7 @@ validate_date(Date) ->
     end.
 
 validate_time(Date) ->
-    case re:run(Date, ?TIME_FORMAT, [{capture,[hour,minute,second]}]) of
+    case re:run(string:strip(Date), ?TIME_FORMAT, [{capture,[hour,minute,second]}]) of
         nomatch ->
             {error, <<"Invalid time format. Example: HH:MM:SS">>};
         {match,[{HourS,HourL},{MinuteS,MinuteL},{SecondS,SecondL}]} ->
@@ -51,7 +51,7 @@ validate_time(Date) ->
     end.
 
 validate_datetime(Date) ->
-    case re:run(Date, "(?<date>"++?DATE_FORMAT++")[\s]+(?<time>"++?TIME_FORMAT++")", [{capture,[date,time]}]) of
+    case re:run(string:strip(Date), "^(?<date>"++?DATE_FORMAT++")[\s]+(?<time>"++?TIME_FORMAT++")$", [{capture,[date,time]}]) of
         nomatch ->
             {error, <<"Invalid date time format. Example: YYYY-MM-DD HH:MM:SS">>};
         {match,[{DateS,DateL},{TimeS,TimeL}]} ->
