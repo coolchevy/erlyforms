@@ -128,6 +128,15 @@ validate_predicate_simple(not_empty, L) when is_list(L), length(L) > 0 -> true;
 validate_predicate_simple(not_empty, _) -> {error,<<"This field is required">>};
 validate_predicate_simple(string, L) when is_list(L) -> true;
 validate_predicate_simple(string, _) -> false;
+validate_predicate_simple(integer, L) when is_list(L) -> 
+    case re:run(L,"^[0-9]+$") of
+        nomatch ->
+            {error,<<"This field must be integer">>};
+        {match,_} ->
+            true
+    end;
+validate_predicate_simple(integer, I) when is_integer(I) -> I;
+validate_predicate_simple(integer, _) -> {error,<<"This field must be integer">>};
 validate_predicate_simple({length, [Exact]}, L) ->
     validate_predicate_simple({length, [Exact, Exact]}, L);
 validate_predicate_simple({length, [Min,Max]}, L) when is_list(L) -> 
