@@ -165,6 +165,7 @@ validate_predicate_simple({member, List}, L) ->
             true;
         false -> {error,<<"Selected variant not in list">>}
     end;
+validate_predicate_simple({members, _}, undefined) -> false;
 validate_predicate_simple({members, List}, L) when is_list(L) ->
     case ordsets:intersection(ordsets:from_list(List), ordsets:from_list(L)) of
         [] ->
