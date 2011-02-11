@@ -9,6 +9,7 @@
              form,
              form_validator,
              email_address,
+             datetime,
              domain,
              custom_form_template_dtl,
              input_field_template_dtl,

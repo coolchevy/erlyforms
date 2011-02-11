@@ -37,7 +37,7 @@ validate_date(Date) ->
         nomatch ->
             {error, <<"Invalid date format. Example: YYYY-MM-DD">>};
         {match,[{YearS,YearL},{MonthS,MonthL},{DayS,DayL}]} ->
-            _MatchDate = {string:substr(Date,YearS+1,YearL+1),string:substr(Date,MonthS+1,MonthL+1), string:substr(Date,DayS+1,DayL+1)},
+            {string:substr(Date,YearS+1,YearL+1),string:substr(Date,MonthS+1,MonthL+1), string:substr(Date,DayS+1,DayL+1)},
             true
     end.
 
@@ -46,12 +46,12 @@ validate_time(Date) ->
         nomatch ->
             {error, <<"Invalid time format. Example: HH:MM:SS">>};
         {match,[{HourS,HourL},{MinuteS,MinuteL},{SecondS,SecondL}]} ->
-            _MatchTime = {string:substr(Date,HourS+1,HourL+1),string:substr(Date,MinuteS+1,MinuteL+1), string:substr(Date,SecondS+1,SecondL+1)},
+            {string:substr(Date,HourS+1,HourL+1),string:substr(Date,MinuteS+1,MinuteL+1), string:substr(Date,SecondS+1,SecondL+1)},
             true
     end.
 
 validate_datetime(Date) ->
-    case re:run(Date, "[\s]+", [{capture,[date,time]}]) of
+    case re:run(Date, "(?<date>"++?DATE_FORMAT++")[\s]+(?<time>"++?TIME_FORMAT++")", [{capture,[date,time]}]) of
         nomatch ->
             {error, <<"Invalid date time format. Example: YYYY-MM-DD HH:MM:SS">>};
         {match,[{DateS,DateL},{TimeS,TimeL}]} ->
