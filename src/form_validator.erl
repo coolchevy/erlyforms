@@ -137,6 +137,15 @@ validate_predicate_simple(integer, L) when is_list(L) ->
     end;
 validate_predicate_simple(integer, I) when is_integer(I) -> I;
 validate_predicate_simple(integer, _) -> {error,<<"This field must be integer">>};
+validate_predicate_simple(float, L) when is_list(L) -> 
+    case re:run(L,"^[0-9]+\.[0-9]+$") of
+        nomatch ->
+            {error,<<"This field must be float">>};
+        {match,_} ->
+            true
+    end;
+validate_predicate_simple(float, I) when is_float(I) -> I;
+validate_predicate_simple(float, _) -> {error,<<"This field must be float">>};
 validate_predicate_simple({length, [Exact]}, L) ->
     validate_predicate_simple({length, [Exact, Exact]}, L);
 validate_predicate_simple({length, [Min,Max]}, L) when is_list(L) -> 
