@@ -114,11 +114,13 @@ validate_rule({Name, Predicates}, Data) when is_list(Name), is_list(Predicates) 
 %% @spec validate_predicate(predicate(), field(), Data) -> true | false | {error, Reason}
 %% @doc Checks a single predicate in a rule.
 %% @end
+validate_predicate({predicate, Fun}, _Name, Data) -> Fun(Data);
+
 validate_predicate({duplication, [Field|Duplicates]}, _Name, Data)
   when is_list(Duplicates), length(Duplicates) >= 1 ->
     FieldValue = proplists:get_value(Field, Data),
     same_value(Field, FieldValue, Duplicates, Data);
-    
+
 validate_predicate(Predicate, Name, Data) ->
     validate_predicate_simple(Predicate, proplists:get_value(Name, Data)).
 
