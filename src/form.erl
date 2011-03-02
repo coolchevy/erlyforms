@@ -314,7 +314,9 @@ attrs_to_string(Attrs) ->
 %%--------------------------------------------------------------------
 
 -spec(field_name(Prefix :: string(), Title :: string()) -> string()).
-field_name(Prefix, Title) ->
+field_name(Prefix, <<Title/binary>>) ->
+    field_name(Prefix, binary_to_list(Title));
+field_name(Prefix, Title) when is_list(Title) ->
     S = lists:filter(fun (C) when $A =< C, C =< $Z;
                          $a =< C, C =< $z;
                          $0 =< C, C =< $9;
@@ -325,7 +327,10 @@ field_name(Prefix, Title) ->
                          (_) -> false
                      end,
                      Title),
-    Prefix ++ string:to_lower(S).
+    Prefix ++ string:to_lower(S);
+field_name(_Prefix, _Title) ->
+    field_name_bad_format.
+
 
 field_name_test() ->
     ?assertMatch("txtpassword", field_name("txt", "Password:")),
