@@ -354,6 +354,18 @@ simple_copy_test() ->
                               {"valid", []}],
                              [{"invalid", invalid},
                               {"valid", foo}])).
+create_test() ->
+  ?assertMatch(#form{},
+      create("User Registration Form", "reg_form", ".",
+          [
+              text([{name,"name"},{rules,[{length, [3,30]}]}]),
+              text([{name,"email"},{rules,[email_address]}]),
+              password([{name,"password"},{rules,[{length, [8,infinity]}]}]),
+              password([{name,"confirm_password"}]),
+              submit([{value,"Signup"}])
+          ],
+          [{"passwords", [{duplication, ["password",
+                              "confirm_password"]}]}])).
 
 post_array(Data) ->
   [{K,post_array_uniq(proplists:get_all_values(K, Data))} || {K,_} <- Data].
