@@ -30,7 +30,6 @@
          rules/1]).
 
 -record(form, {title::string(), formname::string(), action::string(), fields = []::list(), rules = []::list(), template::atom()}).
-%-record(vform, {form, data, validation_result}).
 -record(field, {
     name::string(),
     type::atom(),
@@ -60,9 +59,6 @@
 %% @end
 %%--------------------------------------------------------------------
 
--spec(create(Title::string(), FormName::string(),
-        Action::string(), Fields::list(), 
-        Rules::list()) -> #form{}).
 create(Title, FormName, Action, Fields, Rules) ->
     create(Title, FormName, form_template_dtl, Action, Fields, Rules).
 
@@ -79,9 +75,6 @@ create(Title, FormName, Action, Fields, Rules) ->
 %% @end
 %%--------------------------------------------------------------------
 
--spec(create(Title::string(), FormTemplate::atom(), FormName::string(),
-        Action::string(), Fields::list(), 
-        Rules::list()) -> #form{}).
 create(Title, FormName, FormTemplate, Action, Fields, Rules) ->
     #form{title=Title,
           formname=FormName,
@@ -115,7 +108,7 @@ datetime(Field) ->
     field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{type,text}])).
 
 date(Field) ->
-    Rules = proplists:get_value(rules,Field,[]) ++ ['datetime'],
+    Rules = proplists:get_value(rules,Field,[]) ++ ['date'],
     Attrs = proplists:get_value(attrs,Field,[]) ++ [{class, "datecalendar"}],
     field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{type,text}])).
 
@@ -139,7 +132,6 @@ multiple_select(Field) ->
     end,
     Attrs = proplists:get_value(attrs,Field,[]) ++ [{"multiple","multiple"}],
     field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{template,multiple_select_field_template_dtl}])).
-
 
 select(Field) ->
     DefRules = proplists:get_value(rules,Field,[]),
@@ -291,36 +283,24 @@ render_field_template(Value, Name, Title, Type, Id, Choices, Template, Required,
 attrs_to_string(Attrs) ->
     string:join([io_lib:format("~ts=\"~ts\"", [Name,Value]) || {Name, Value} <- Attrs], " ").
 
-%%--------------------------------------------------------------------
-%% @doc generate field name
-%% @spec field_name(Prefix :: string(), Title :: string()) -> string()
-%% @end
-%%--------------------------------------------------------------------
-
--spec(field_name(Prefix :: string(), Title :: string()) -> string()).
-field_name(Prefix, <<Title/binary>>) ->
-    field_name(Prefix, binary_to_list(Title));
-field_name(Prefix, Title) when is_list(Title) ->
-    S = lists:filter(fun (C) when $A =< C, C =< $Z;
-                         $a =< C, C =< $z;
-                         $0 =< C, C =< $9;
-                         C =:= $_;
-                         C =:= $.;
-                         C =:= $- ->
-                             true;
-                         (_) -> false
-                     end,
-                     Title),
-    Prefix ++ string:to_lower(S);
-field_name(_Prefix, _Title) ->
-    field_name_bad_format.
+%field_name(Prefix, <<Title/binary>>) ->
+%    field_name(Prefix, binary_to_list(Title));
+%field_name(Prefix, Title) when is_list(Title) ->
+%    S = lists:filter(fun (C) when $A =< C, C =< $Z;
+%                         $a =< C, C =< $z;
+%                         $0 =< C, C =< $9;
+%                         C =:= $_;
+%                         C =:= $.;
+%                         C =:= $- ->
+%                             true;
+%                         (_) -> false
+%                     end,
+%                     Title),
+%    Prefix ++ string:to_lower(S);
+%field_name(_Prefix, _Title) ->
+%    field_name_bad_format.
 
 
-%field_name_test() ->
-%    ?assertMatch("txtpassword", field_name("txt", "Password:")),
-%    ?assertMatch("txtpassword", field_name("txt", "pass word")),
-%    ?assertMatch("pwpassword", field_name("pw", "Password:")),
-%    ?assertMatch("pwpassword", field_name("pw", "pass word")).
 
 %%--------------------------------------------------------------------
 %% @doc generate field id
@@ -328,23 +308,12 @@ field_name(_Prefix, _Title) ->
 %% @end
 %%--------------------------------------------------------------------
 
--spec(field_id(FieldName :: string()) -> string()).
 field_id(FieldName) ->
     "id_" ++ FieldName.
 
 
 field_required(Rules) ->
     lists:member('not_empty',Rules).
-
-%create_test() ->
-%    ?assertMatch(#form{},
-%                 create("Setup Information", "","",
-%                        [text("User Name:", [{length, [3,30]}]),
-%                         text("Email address:", [email_address]),
-%                         password("Password:", "txtpassword", [{length, [8,infinity]}]),
-%                         password("Confirm Password:", "txtpasswordc", []),
-%                         submit("Signup")],
-%                        [{"passwords", [{duplication, ["txtpassword", "txtpasswordc"]}]}])).
 
 valid_fields_test() ->
     ?assertMatch([{"valid", foo}],

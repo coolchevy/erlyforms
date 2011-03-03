@@ -6,7 +6,6 @@
 %%%-------------------------------------------------------------------
 -module(datetime).
 
-%-include_lib("eunit/include/eunit.hrl").
 
 %% API
 -export([
@@ -42,7 +41,7 @@ validate_date(Date) ->
     end.
 
 validate_time(Date) ->
-    case re:run(string:strip(Date), "^"++?TIME_FORMAT++"$", [{capture,[hour,minute,second]}]) of
+    case re:run(string:strip(Date), "^"++?TIME_FORMAT++"$", [{capture,[hour,minute,second],list}]) of
         nomatch ->
             {error, <<"Invalid time format. Example: HH:MM:SS">>};
         {match,[{HourS,HourL},{MinuteS,MinuteL},{SecondS,SecondL}]} ->
