@@ -123,7 +123,7 @@ password(Field) ->
     field(Field ++ [{type,password}]).
 
 submit(Field) ->
-    field(Field ++ [{type,submit}]).
+    field(Field ++ [{type,submit},{title,[]}]).
 
 hidden(Field) ->
         field(Field ++ [{type,hidden}]).
