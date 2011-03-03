@@ -14,23 +14,15 @@
          render_with_data/2,
          render_with_validation/3,
          render_with_fields/2,
-         text/2,
-         text/3,
-         date/2,
-         date/3,
-         datetime/2,
-         datetime/3,
-         password/2,
-         password/3,
+         field/1,
+         text/1,
+         date/1,
+         datetime/1,
+         password/1,
          submit/1,
-         submit/2,
-         hidden/3,
-         select/3,
-         select/4,
-         multiple_select/3,
-         multiple_select/4,
-         custom/3,
-         custom/4,
+         hidden/1,
+         select/1,
+         multiple_select/1,
          validate/2,
          validate_field/3,
          valid_fields/3,
@@ -49,7 +41,6 @@
     choices = []::list(),
     attrs = []::list(),
     template::atom(),
-    initial::string(),
     required::boolean()
     }).
 
@@ -99,74 +90,67 @@ create(Title, FormName, FormTemplate, Action, Fields, Rules) ->
           template=FormTemplate,
           rules=Rules}.
 
-text(Title, Rules) ->
-    text(Title, field_name("txt", Title), Rules).
+field(Field) ->
+    Name = proplists:get_value(name,Field,"field"),
+    #field{
+        name = Name,
+        type = proplists:get_value(type,Field,text),
+        title = proplists:get_value(title,Field,Name),
+        id = field_id(Name),
+        value = proplists:get_value(value,Field),
+        rules = proplists:get_value(rules,Field,[]),
+        choices = proplists:get_value(choices,Field,[]),
+        attrs = proplists:get_value(attrs,Field,[]),
+        template = proplists:get_value(template, Field, input_field_template_dtl),
+        required = field_required(proplists:get_value(rules,Field,[]))
+    }.
 
-text(Title, Name, Rules) ->
-    #field{type=text, title=Title, name=Name, id=field_id(Name), rules=Rules, template=input_field_template_dtl, required=field_required(Rules)}.
 
-datetime(Title, Rules) ->
-    datetime(Title, field_name("datetime", Title), Rules).
+text(Field) ->
+    field(lists:ukeysort(1, Field ++ [{type,text}])).
 
-datetime(Title, Name, Rules) ->
-    Attrs = [{class,"datetimecalendar"}],
-    #field{type=text, title=Title, name=Name, id=field_id(Name), attrs=Attrs, rules=['datetime'] ++ Rules, template=input_field_template_dtl, required=field_required(Rules)}.
+datetime(Field) ->
+    Rules = proplists:get_value(rules,Field,[]) ++ ['datetime'],
+    Attrs = proplists:get_value(attrs,Field,[]) ++ [{class,"datetimecalendar"}],
+    field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{type,text}])).
 
-date(Title, Rules) ->
-    date(Title, field_name("date", Title), Rules).
+date(Field) ->
+    Rules = proplists:get_value(rules,Field,[]) ++ ['datetime'],
+    Attrs = proplists:get_value(attrs,Field,[]) ++ [{class, "datecalendar"}],
+    field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{type,text}])).
 
-date(Title, Name, Rules) ->
-    Attrs = [{class,"datecalendar"}],
-    #field{type=text, title=Title, name=Name, id=field_id(Name), attrs=Attrs, rules=['date'] ++ Rules, template=input_field_template_dtl, required=field_required(Rules)}.
+password(Field) ->
+    field(Field ++ [{type,password}]).
 
-password(Title, Rules) ->
-    password(Title, field_name("pw", Title), Rules).
+submit(Field) ->
+    field(Field ++ [{type,submit}]).
 
-password(Title, Name, Rules) ->
-    #field{type=password, title=Title, name=Name, id=field_id(Name), rules=Rules, template=input_field_template_dtl, required=field_required(Rules)}. 
+hidden(Field) ->
+        field(Field ++ [{type,hidden}]).
 
-submit(Title) ->
-    submit(Title, field_name("sbt",Title)).
-
-submit(Title, Name) ->
-    #field{type=submit, initial=Title, id=field_id(Name), name=Name,  template=input_field_template_dtl}.
-
-hidden(Name, Initial, Rules) ->
-        #field{type=hidden, name=Name,id=field_id(Name), rules=Rules, initial=Initial, template=input_field_template_dtl}.
-
-multiple_select(Title, Choices, Rules) ->
-    multiple_select(Title, field_name('multiple_select',Title), Choices, Rules).
-
-multiple_select(Title, Name, Choices, Rules) ->
-    Required = field_required(Rules),
-    case Required of
+multiple_select(Field) ->
+    DefRules = proplists:get_value(rules,Field,[]),
+    DefChoices = proplists:get_value(choices,Field,[]),
+    case field_required(DefRules) of
         true ->
-                DefaultRules = [{members,[X || {X,_} <- Choices]}],
-                AllRules = lists:append(DefaultRules,Rules);
+            Rules = DefRules ++ [{members,[X || {X,_} <- DefChoices]}];
         false ->
-                AllRules = Rules
+            Rules = DefRules
     end,
-    #field{name=Name, title=Title, choices=Choices, id=field_id(Name), rules=AllRules, attrs=[{"multiple","multiple"}],  template=multiple_select_field_template_dtl, required=Required}.
+    Attrs = proplists:get_value(attrs,Field,[]) ++ [{"multiple","multiple"}],
+    field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{template,multiple_select_field_template_dtl}])).
 
-select(Title, Choices, Rules) ->
-    select(Title, field_name('select',Title), Choices, Rules).
 
-select(Title, Name, Choices, Rules) ->
-    Required = field_required(Rules),
-    case Required of
+select(Field) ->
+    DefRules = proplists:get_value(rules,Field,[]),
+    DefChoices = proplists:get_value(choices,Field,[]),
+    case field_required(DefRules) of
         true ->
-                DefaultRules = [{member,[X || {X,_} <- Choices]}],
-                AllRules = lists:append(DefaultRules,Rules);
+                Rules = DefRules ++ [{member,[X || {X,_} <- DefChoices]}];
         false ->
-                AllRules = Rules
+                Rules = DefRules
     end,
-    #field{name=Name, title=Title, choices=Choices, id=field_id(Name), rules=AllRules,  template=select_field_template_dtl, required=Required}.
-
-custom(Title, Rules, Template) ->
-    custom(Title, field_name("custom", Title), Rules, Template).
-
-custom(Title, Name, Rules, Template) ->
-    #field{title=Title, name=Name, id=field_id(Name), rules=Rules, template=Template, required=field_required(Rules)}.
+    field(lists:ukeysort(1, [{rules, Rules}] ++ Field ++ [{template,select_field_template_dtl}])).
 
 render(F = #form{}) ->
     render_form(F, []).
@@ -272,7 +256,7 @@ render_form(#form{title=Title,
 %%--------------------------------------------------------------------
 
 -spec(render_field(Field :: record(), ValidFields :: list()) -> {ok, list()}).
-render_field(#field{type=Type, name=Name, initial=Initial, title=Title, id=Id, choices=Choices, template=Template, required=Required, attrs=Attrs}, ValidFields) ->
+render_field(#field{type=Type, name=Name, value=Initial, title=Title, id=Id, choices=Choices, template=Template, required=Required, attrs=Attrs}, ValidFields) ->
     render_field_template(proplists:get_value(Name, ValidFields),Name,Title,Type,Id,Initial,Choices,Template,Required,Attrs).
 
 render_field_template(undefined, Name, Title, Type, Id, Initial, Choices, Template, Required, Attrs)->
@@ -332,11 +316,11 @@ field_name(_Prefix, _Title) ->
     field_name_bad_format.
 
 
-field_name_test() ->
-    ?assertMatch("txtpassword", field_name("txt", "Password:")),
-    ?assertMatch("txtpassword", field_name("txt", "pass word")),
-    ?assertMatch("pwpassword", field_name("pw", "Password:")),
-    ?assertMatch("pwpassword", field_name("pw", "pass word")).
+%field_name_test() ->
+%    ?assertMatch("txtpassword", field_name("txt", "Password:")),
+%    ?assertMatch("txtpassword", field_name("txt", "pass word")),
+%    ?assertMatch("pwpassword", field_name("pw", "Password:")),
+%    ?assertMatch("pwpassword", field_name("pw", "pass word")).
 
 %%--------------------------------------------------------------------
 %% @doc generate field id
