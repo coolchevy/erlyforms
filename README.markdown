@@ -30,6 +30,11 @@ Usage
                 ).
 
 
+**Render form:**
+    render() ->
+        form:render(my_form()).
+
+
 **Validate form:**
 
     process_post(Post) ->
