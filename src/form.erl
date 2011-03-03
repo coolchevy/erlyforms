@@ -336,15 +336,15 @@ field_id(FieldName) ->
 field_required(Rules) ->
     lists:member('not_empty',Rules).
 
-create_test() ->
-    ?assertMatch(#form{},
-                 create("Setup Information", "","",
-                        [text("User Name:", [{length, [3,30]}]),
-                         text("Email address:", [email_address]),
-                         password("Password:", "txtpassword", [{length, [8,infinity]}]),
-                         password("Confirm Password:", "txtpasswordc", []),
-                         submit("Signup")],
-                        [{"passwords", [{duplication, ["txtpassword", "txtpasswordc"]}]}])).
+%create_test() ->
+%    ?assertMatch(#form{},
+%                 create("Setup Information", "","",
+%                        [text("User Name:", [{length, [3,30]}]),
+%                         text("Email address:", [email_address]),
+%                         password("Password:", "txtpassword", [{length, [8,infinity]}]),
+%                         password("Confirm Password:", "txtpasswordc", []),
+%                         submit("Signup")],
+%                        [{"passwords", [{duplication, ["txtpassword", "txtpasswordc"]}]}])).
 
 valid_fields_test() ->
     ?assertMatch([{"valid", foo}],
