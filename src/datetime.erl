@@ -35,8 +35,8 @@ validate_date(Date) ->
     case re:run(string:strip(Date), "^"++?DATE_FORMAT++"$", [{capture,[year,month,day],list}]) of
         nomatch ->
             {error, <<"Invalid date format. Example: YYYY-MM-DD">>};
-        {match,[Year, Month, Day]} ->
-            {Year, Month, Day},
+        {match,[_Year, _Month, _Day]} ->
+            %{Year, Month, Day},
             true
     end.
 
@@ -44,8 +44,8 @@ validate_time(Date) ->
     case re:run(string:strip(Date), "^"++?TIME_FORMAT++"$", [{capture,[hour,minute,second],list}]) of
         nomatch ->
             {error, <<"Invalid time format. Example: HH:MM:SS">>};
-        {match,[Hour, Minute, Second]} ->
-            {Hour, Minute, Second},
+        {match,[_Hour, _Minute, _Second]} ->
+            %{Hour, Minute, Second},
             true
     end.
 
