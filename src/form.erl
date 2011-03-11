@@ -85,6 +85,7 @@ create(Title, FormName, FormTemplate, Action, Fields, Rules) ->
 
 field(Field) ->
     Name = proplists:get_value(name,Field,"field"),
+    error_logger:info_msg("~p", [proplists:get_value(choices,Field,[])]),
     #field{
         name = Name,
         type = proplists:get_value(type,Field,text),
@@ -144,7 +145,7 @@ select(Field) ->
                 Choices = DefChoices,
                 Rules = DefRules
     end,
-    field(lists:ukeysort(1, [{rules, Rules}] ++ Field ++ [{template,select_field_template_dtl}] ++ Choices)).
+    field(lists:ukeysort(1, [{rules, Rules}] ++ Field ++ [{template,select_field_template_dtl}] ++ [{choices,Choices}])).
 
 render(F = #form{}) ->
     render_form(F, []).
