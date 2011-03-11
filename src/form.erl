@@ -85,7 +85,6 @@ create(Title, FormName, FormTemplate, Action, Fields, Rules) ->
 
 field(Field) ->
     Name = proplists:get_value(name,Field,"field"),
-    error_logger:info_msg("~p", [proplists:get_value(choices,Field,[])]),
     #field{
         name = Name,
         type = proplists:get_value(type,Field,text),
