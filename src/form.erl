@@ -138,11 +138,13 @@ select(Field) ->
     DefChoices = proplists:get_value(choices,Field,[]),
     case field_required(DefRules) of
         true ->
+                Choices = [{"","------"}] ++ DefChoices,
                 Rules = DefRules ++ [{member,[X || {X,_} <- DefChoices]}];
         false ->
+                Choices = DefChoices,
                 Rules = DefRules
     end,
-    field(lists:ukeysort(1, [{rules, Rules}] ++ Field ++ [{template,select_field_template_dtl}])).
+    field(lists:ukeysort(1, [{rules, Rules}] ++ Field ++ [{template,select_field_template_dtl}] ++ Choices)).
 
 render(F = #form{}) ->
     render_form(F, []).
