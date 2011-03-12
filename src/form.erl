@@ -136,7 +136,7 @@ multiple_select(Field) ->
 select(Field) ->
     DefRules = proplists:get_value(rules,Field,[]),
     DefChoices = proplists:get_value(choices,Field,[]),
-    Choices = [{"","------"}] ++ DefChoices,
+    Choices = [{"-","------"}] ++ DefChoices,
     case field_required(DefRules) of
         true ->
                 Rules = DefRules ++ [{member,[X || {X,_} <- DefChoices]}];
