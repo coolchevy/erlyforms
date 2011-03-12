@@ -136,12 +136,11 @@ multiple_select(Field) ->
 select(Field) ->
     DefRules = proplists:get_value(rules,Field,[]),
     DefChoices = proplists:get_value(choices,Field,[]),
+    Choices = [{"","------"}] ++ DefChoices,
     case field_required(DefRules) of
         true ->
-                Choices = [{"","------"}] ++ DefChoices,
                 Rules = DefRules ++ [{member,[X || {X,_} <- DefChoices]}];
         false ->
-                Choices = DefChoices,
                 Rules = DefRules
     end,
     field(lists:ukeysort(1, [{rules, Rules}] ++ Field ++ [{template,select_field_template_dtl}] ++ [{choices,Choices}])).
