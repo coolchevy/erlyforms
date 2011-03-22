@@ -1,8 +1,9 @@
 {%ifequal type "hidden"%}
-    <input type="{{ type }}" name="{{ name }}" id="{{ id }}" value="{{ value }}"/>
+<input type="{{ type }}" name="{{ name }}" id="{{ id }}" value="{{ value }}" />
 {%else%}
-    <li {%if required%}class="required"{%endif%}>
-        {%if title%}<label for="{{ name }}">{{ title }}</label>{%endif%}
-        <input type="{{ type }}" name="{{ name }}" id="{{ id }}" value="{{ value }}"  {{attrs}} />
-    </li>
-{%endif%}
+<li{%if required%} class="req"{%endif%}>
+{%if title%}<label for="{{ name }}">{{ title }}:</label>{%endif%}
+<input type="{{ type }}" name="{{ name }}" id="{{ id }}" {%ifequal type "checkbox"%}value="{{choices.checked_value}}"{%else%}value="{{ value }}"{%endifequal%} {{attrs}} {%ifequal choices.checked_value value%}checked="checked"{%endifequal%}/>
+    <span class="msg"></span>
+</li>
+{%endifequal%}

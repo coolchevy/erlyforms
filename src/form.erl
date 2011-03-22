@@ -16,6 +16,7 @@
          render_with_fields/2,
          field/1,
          text/1,
+         checkbox/1,
          date/1,
          datetime/1,
          password/1,
@@ -101,6 +102,9 @@ field(Field) ->
 
 text(Field) ->
     field(lists:ukeysort(1, Field ++ [{type,text}])).
+
+checkbox(Field) ->
+    field(lists:ukeysort(1, Field ++ [{type,checkbox}])).
 
 datetime(Field) ->
     Rules = proplists:get_value(rules,Field,[]) ++ ['datetime'],
