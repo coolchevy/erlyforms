@@ -65,14 +65,20 @@ valid_fields(Results, Data) ->
 
 %% @spec validate_rule(rule(), form_data()) -> validation()
 validate_rule({Name, Predicates}, Data) when is_list(Name), is_list(Predicates) ->
-    {Name,
-     lists:flatmap(fun (Predicate) ->
-                           case validate_predicate(Predicate, Name, Data) of
-                               true -> [];
-                               false -> [{error, Predicate, false}];
-                               {error, Reason} -> [{error, Predicate, Reason}]
-                           end
-                  end, normalize_predicates(Predicates))}.
+    case lists:member(not_empty,Predicates) orelse length(proplists:get_value(Name, Data,[])) > 0 of
+      true ->
+        {Name,
+         lists:flatmap(fun (Predicate) ->
+                               case validate_predicate(Predicate, Name, Data) of
+                                   true -> [];
+                                   false -> [{error, Predicate, false}];
+                                   {error, Reason} -> [{error, Predicate, Reason}]
+                               end
+                      end, normalize_predicates(Predicates))};
+      false ->
+        {Name,[]}
+    end.
+
 
 %%====================================================================
 %% Internal functions
