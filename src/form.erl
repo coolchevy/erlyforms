@@ -40,6 +40,7 @@
     rules = []::list(),
     choices = []::list(),
     attrs = []::list(),
+    multiple = false::boolean(),
     template::atom(),
     required::boolean()
     }).
@@ -96,6 +97,7 @@ field(Field) ->
         choices = proplists:get_value(choices,Field,[]),
         attrs = proplists:get_value(attrs,Field,[]),
         template = proplists:get_value(template, Field, input_field_template_dtl),
+        multiple = proplists:get_value(multiple, Field, false),
         required = field_required(proplists:get_value(rules,Field,[]))
     }.
 
@@ -135,7 +137,7 @@ multiple_select(Field) ->
             Rules = DefRules
     end,
     Attrs = proplists:get_value(attrs,Field,[]) ++ [{"multiple","multiple"}],
-    field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{template,multiple_select_field_template_dtl}])).
+    field(lists:ukeysort(1, [{attrs,Attrs}, {rules, Rules}] ++ Field ++ [{multiple, true}, {template,multiple_select_field_template_dtl}])).
 
 select(Field) ->
     DefRules = proplists:get_value(rules,Field,[]),
@@ -196,10 +198,11 @@ valid_fields(F, Result, Data) ->
 
 
 valid_post(F = #form{}, Data) ->
-    %% Fix Array in Post
-    UniqData = post_array(Data),
-    Result = form:validate(F, UniqData),
-    Fields = valid_fields(F, Result, UniqData),
+    %% Fix Uniq into Array in Post
+    UniqData = uniq_post_fields(Data),
+    FilteredData = filter_post_form(F, UniqData),
+    Result = form:validate(F, FilteredData),
+    Fields = valid_fields(F, Result, FilteredData),
     case form_validator:is_valid(Result) of
         true ->
             {valid, Fields};
@@ -372,9 +375,27 @@ create_test() ->
           [{"passwords", [{duplication, ["password",
                               "confirm_password"]}]}])).
 
-post_array(Data) ->
-  [{K,post_array_uniq(proplists:get_all_values(K, Data))} || {K,_} <- Data].
-post_array_uniq(Data) when is_list(Data), length(Data) > 1 ->
+%%
+%Filters for post data per field
+%%
+filter_post_form(#form{fields = Fields}, PostData) ->
+  lists:map(fun(Field) -> filter_post_field(Field, PostData) end, Fields).
+filter_post_field(#field{name = Name, multiple = true},PostData) ->
+  Data = proplists:get_value(Name, PostData,[]),
+  case Data of
+    [[_|_]|_] ->
+      {Name, Data};
+    _Any ->
+      {Name, [Data]}
+  end;
+filter_post_field(#field{name = Name}, PostData) ->
+  {Name, proplists:get_value(Name, PostData,[])}.
+
+
+uniq_post_fields(Data) ->
+  lists:ukeysort(1,[{K,uniq_post_uniq(proplists:get_all_values(K, Data))} || {K,_} <- Data]).
+%fix if field is not list
+uniq_post_uniq(Data) when is_list(Data), length(Data) > 1 ->
   Data;
-post_array_uniq(Data) ->
+uniq_post_uniq(Data) ->
   lists:last(Data).
